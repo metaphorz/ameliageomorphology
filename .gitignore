@@ -1,0 +1,13 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+*.log
+tests/auto/test_viewer.log
+# LaTeX intermediate files (PDF is checked in)
+docs/*.aux
+docs/*.log
+docs/*.out
+docs/*.toc
+docs/*.bak

@@ -1,0 +1,46 @@
+#!/bin/zsh
+# Start script for Amelia Island Coastline Evolution
+# Serves index.html on port 8765 and opens the browser.
+
+PORT=8765
+URL="http://localhost:${PORT}/index.html"
+DIR="$(cd "$(dirname "$0")" && pwd)"
+
+echo "Starting Amelia Island Coastline Evolution..."
+echo ""
+
+# Check if port is already in use
+if lsof -i :${PORT} > /dev/null 2>&1; then
+    echo "Port ${PORT} is already in use"
+    echo "   Stopping existing process..."
+
+    lsof -ti :${PORT} | xargs kill -9 2>/dev/null
+    sleep 1
+
+    echo "   Existing process stopped"
+fi
+
+# Start HTTP server in background
+echo "Starting HTTP server on port ${PORT}..."
+cd "$DIR"
+python3 -m http.server ${PORT} > /tmp/amelia-geomorph.log 2>&1 &
+SERVER_PID=$!
+
+# Wait for server to come up
+sleep 1
+
+if lsof -i :${PORT} > /dev/null 2>&1; then
+    echo "   Server started (PID: ${SERVER_PID})"
+    echo ""
+    echo "Viewer:    ${URL}"
+    echo "Paper:     ${DIR}/docs/geomorphological-experiments.pdf"
+    echo ""
+    echo "Opening browser..."
+    open "${URL}"
+    echo ""
+    echo "To stop the server: ./stop"
+else
+    echo "   Failed to start server"
+    echo "   Check log: /tmp/amelia-geomorph.log"
+    exit 1
+fi

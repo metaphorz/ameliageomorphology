@@ -1,0 +1,128 @@
+{
+  "units": {
+    "time": "years_BP",
+    "level": "meters_vs_today"
+  },
+  "sources": [
+    "Hawkes et al. 2016 (Quaternary Science Reviews, NE Florida)",
+    "Toscano & Macintyre 2003 (Coral Reefs, Caribbean)",
+    "Engelhart & Horton 2012 (Quaternary Science Reviews)",
+    "Lambeck et al. 2014 (PNAS, LGM lowstand)"
+  ],
+  "no_holocene_highstand": true,
+  "no_holocene_highstand_note": "Hawkes 2016: no mid-Holocene sea-level highstand at this latitude.",
+  "points": [
+    [
+      125000,
+      6.0
+    ],
+    [
+      120000,
+      4.0
+    ],
+    [
+      110000,
+      2.0
+    ],
+    [
+      100000,
+      -10.0
+    ],
+    [
+      80000,
+      -20.0
+    ],
+    [
+      60000,
+      -50.0
+    ],
+    [
+      40000,
+      -75.0
+    ],
+    [
+      30000,
+      -85.0
+    ],
+    [
+      25000,
+      -110.0
+    ],
+    [
+      20000,
+      -120.0
+    ],
+    [
+      18000,
+      -115.0
+    ],
+    [
+      16000,
+      -100.0
+    ],
+    [
+      14700,
+      -90.0
+    ],
+    [
+      13500,
+      -72.0
+    ],
+    [
+      12000,
+      -60.0
+    ],
+    [
+      10000,
+      -30.0
+    ],
+    [
+      9000,
+      -15.0
+    ],
+    [
+      8000,
+      -5.7
+    ],
+    [
+      7000,
+      -4.0
+    ],
+    [
+      6000,
+      -3.0
+    ],
+    [
+      5000,
+      -2.0
+    ],
+    [
+      4000,
+      -1.5
+    ],
+    [
+      3000,
+      -1.0
+    ],
+    [
+      2000,
+      -0.5
+    ],
+    [
+      1000,
+      -0.3
+    ],
+    [
+      500,
+      -0.25
+    ],
+    [
+      146,
+      -0.2
+    ],
+    [
+      0,
+      0.0
+    ]
+  ]
+}

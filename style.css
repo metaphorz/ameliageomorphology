@@ -1,0 +1,324 @@
+:root {
+  --bg: #f4eee2;
+  --ink: #2a2a2a;
+  --ocean: #1f6fb5;
+  --ocean-deep: #134a7a;
+  --sand: #c9a66b;
+  --pleist: #a47148;
+  --holo: #e8d29a;
+  --marsh: #6a8f4d;
+  --ridge: #d9b876;
+  --hint: #b94a3c;
+  --panel: #ffffff;
+  --panel-edge: #d8cdb3;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  height: 100vh;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+header {
+  padding: 14px 22px 8px;
+  border-bottom: 1px solid var(--panel-edge);
+  background: linear-gradient(to bottom, #fffaf0, var(--bg));
+}
+
+header h1 {
+  margin: 0;
+  font-size: 22px;
+  color: var(--ocean-deep);
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+header .byline {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #6a6a6a;
+}
+
+main {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 12px;
+  padding: 12px 22px;
+  flex: 1 1 auto;
+  min-height: 540px;
+}
+
+#map-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+#map {
+  flex: 1 1 auto;
+  min-height: 360px;
+  border-radius: 6px;
+  border: 1px solid var(--panel-edge);
+  background: var(--ocean);
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--panel-edge);
+  border-radius: 6px;
+  padding: 14px 16px;
+}
+
+.cross-panel {
+  padding: 10px 12px 8px;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+}
+
+.cross-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.cross-sub {
+  font-weight: 400;
+  text-transform: none;
+  color: #999;
+  letter-spacing: 0;
+}
+
+#cross-svg {
+  flex: 1 1 auto;
+  width: 100%;
+}
+
+.cross-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 11px;
+  color: #555;
+  padding-top: 4px;
+}
+
+.cl-item { display: inline-flex; align-items: center; gap: 4px; }
+.cl-sw {
+  width: 12px; height: 10px;
+  display: inline-block;
+  border: 1px solid #888;
+}
+.cl-sw.plei { background: var(--pleist); }
+.cl-sw.holo { background: var(--holo); }
+.cl-sw.marsh { background: var(--marsh); }
+.cl-sw.sea { background: var(--ocean); }
+
+#info {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.info-era {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ocean-deep);
+  margin-bottom: 2px;
+}
+
+.info-time {
+  font-size: 26px;
+  color: var(--ink);
+  font-weight: 300;
+  line-height: 1.1;
+}
+
+.info-time-unit {
+  font-size: 12px;
+  color: #8a8a8a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-left: 4px;
+}
+
+.info-sl {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #555;
+}
+#info-sl-num { font-weight: 600; color: var(--ocean-deep); }
+
+.info-narrative {
+  margin-top: 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #333;
+  flex: 1 1 auto;
+}
+
+.info-src {
+  font-size: 11px;
+  color: #999;
+  border-top: 1px solid #eee;
+  padding-top: 8px;
+  margin-top: 8px;
+}
+
+#controls {
+  margin: 0 22px 14px;
+}
+
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.slider-label {
+  font-size: 12px;
+  color: #666;
+  min-width: 44px;
+}
+
+#time-slider {
+  flex: 1 1 auto;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  background: linear-gradient(to right, #b89a73, #d4b07a, #e8d29a, #6a8f4d);
+  border-radius: 3px;
+  outline: none;
+}
+
+#time-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--ocean-deep);
+  border: 2px solid white;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+#time-slider::-moz-range-thumb {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--ocean-deep);
+  border: 2px solid white;
+  cursor: pointer;
+}
+
+.ticks {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: 10px;
+  color: #888;
+  padding: 0 44px;
+}
+
+.ticks span {
+  white-space: nowrap;
+}
+
+.play-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+button {
+  padding: 6px 14px;
+  font-size: 13px;
+  background: var(--ocean-deep);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+button:hover { background: var(--ocean); }
+
+.speed-label {
+  font-size: 12px;
+  color: #666;
+  margin-left: auto;
+}
+
+#speed-sel {
+  font-size: 12px;
+  padding: 3px 6px;
+  border: 1px solid var(--panel-edge);
+  border-radius: 3px;
+  background: white;
+}
+
+footer {
+  padding: 8px 22px 16px;
+  font-size: 11px;
+  color: #888;
+  border-top: 1px solid var(--panel-edge);
+  line-height: 1.5;
+}
+
+footer a { color: var(--ocean); }
+
+/* Leaflet layer styling helpers — set inline by viewer.js as Path options */
+.layer-pleistocene { fill: #a47148; stroke: #6e4e32; }
+.layer-holocene    { fill: #e8d29a; stroke: #b89a73; }
+.layer-marsh       { fill: #6a8f4d; stroke: #4f6e38; }
+.layer-ridge       { fill: #d9b876; stroke: #8e6a3c; }
+.layer-bar         { fill: #f0deaf; stroke: #b89a73; }
+.layer-hint        { fill: none; stroke: #b94a3c; stroke-dasharray: 6 4; }
+
+/* Jetty rollover popup */
+.jetty-popup {
+  max-width: 340px;
+}
+.jetty-popup .jp-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ocean-deep);
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 4px;
+  margin-bottom: 6px;
+}
+.jetty-popup .jp-body {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #2a2a2a;
+}
+/* Override Leaflet's default tooltip styles to allow wrapping + width */
+.leaflet-tooltip.jetty-tooltip {
+  background: rgba(255,255,255,0.98) !important;
+  border: 1px solid #888 !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25) !important;
+  padding: 8px 12px !important;
+  color: var(--ink);
+  width: 560px !important;
+  max-width: 560px !important;
+  white-space: normal !important;
+  word-wrap: break-word;
+  font-size: 12px;
+  line-height: 1.45;
+  pointer-events: auto;
+}
+.leaflet-tooltip.jetty-tooltip::before {
+  display: none;  /* hide the default tooltip arrow which can look odd at this width */
+}

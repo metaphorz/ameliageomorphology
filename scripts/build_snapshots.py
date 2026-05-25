@@ -391,10 +391,13 @@ def main():
     print(f"[snapshots] pleist: area={plei.area:.5f} centroid_lon={plei.centroid.x:.4f}", flush=True)
     print(f"[snapshots] holo  : area={holo.area:.5f} centroid_lon={holo.centroid.x:.4f}", flush=True)
 
-    # Marsh straddles boundary - subtract from both halves so it renders
-    # cleanly as the dedicated marsh layer.
-    plei_clean = plei.difference(marsh).buffer(0)
-    holo_clean = holo.difference(marsh).buffer(0)
+    # IMPORTANT: do NOT subtract the marsh from pleist/holo. The OSM
+    # marsh is a union of 37 wetland polygons with internal "holes"
+    # (upland patches between wetlands). If we subtract, those holes
+    # become uncovered gaps showing through to the basemap. Instead,
+    # let pleist/holo cover the full island and render marsh ON TOP.
+    plei_clean = plei.buffer(0)
+    holo_clean = holo.buffer(0)
 
     # Beach ridges, clipped to Holocene wedge
     ridge_features = []

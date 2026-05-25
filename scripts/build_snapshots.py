@@ -436,36 +436,32 @@ def main():
             "highest emergent crests.",
     }))
 
-    # Holocene wedge GROWS over time. Built as a sequence of progressively
-    # larger polygons, each clipped to the area between the boundary line
-    # and a fraction f of the wedge's western-to-eastern extent.
-    # At ka=5 (just welded): f=0.15 — thin strip immediately east of marsh.
-    # At ka=0 (today): f=1.0 — full eastern half.
-    # Each stage is visible only during its own ka window; the next stage
-    # supersedes it by extending further east.
-    holo_minx, holo_miny, holo_maxx, holo_maxy = holo_clean.bounds
-    holo_width = holo_maxx - holo_minx
+    # Holocene wedge GROWS over time. Each progressive stage is the full
+    # Holocene wedge scaled horizontally about its WESTERN edge (the
+    # Pleistocene/Holocene boundary). Scaling preserves the SHAPE of the
+    # east edge — so the growing wedge's east boundary at any time is a
+    # shrunk-but-curved version of Amelia's real Atlantic coastline,
+    # not a straight vertical line.
+    from shapely.affinity import scale as shp_scale
+    holo_minx = holo_clean.bounds[0]
     HOLO_STAGES = [
-        # (id_suffix, from_ka, to_ka, fraction of wedge width)
-        ("5ka",    5.0,  4.0, 0.18),
-        ("4ka",    4.0,  3.0, 0.32),
-        ("3ka",    3.0,  2.0, 0.50),
-        ("2ka",    2.0,  1.0, 0.68),
-        ("1ka",    1.0,  0.5, 0.82),
+        # (id_suffix, from_ka, to_ka, fraction of full wedge width)
+        ("5ka",    5.0,  4.0,  0.18),
+        ("4ka",    4.0,  3.0,  0.32),
+        ("3ka",    3.0,  2.0,  0.50),
+        ("2ka",    2.0,  1.0,  0.68),
+        ("1ka",    1.0,  0.5,  0.82),
         ("500yr",  0.5,  0.15, 0.92),
-        ("modern", 0.15, 0.0, 1.0),
+        ("modern", 0.15, 0.0,  1.0),
     ]
     for sid, fk, tk, frac in HOLO_STAGES:
-        # Build a bounding rectangle from the western edge of the wedge
-        # eastward by `frac * holo_width`.
-        cut_x = holo_minx + frac * holo_width
-        bounder = Polygon([
-            (holo_minx - 0.01, holo_miny - 0.01),
-            (cut_x,            holo_miny - 0.01),
-            (cut_x,            holo_maxy + 0.01),
-            (holo_minx - 0.01, holo_maxy + 0.01),
-        ])
-        stage = holo_clean.intersection(bounder).buffer(0)
+        # Scale x by frac, keeping the west edge anchored at holo_minx.
+        # Points at the east edge of the full Holocene get pulled
+        # westward proportionally; the east-edge curvature is preserved.
+        stage = shp_scale(holo_clean, xfact=frac, yfact=1.0,
+                          origin=(holo_minx, 0))
+        # Ensure we don't extend beyond the full Holocene (numerical safety)
+        stage = stage.intersection(holo_clean).buffer(0)
         if stage.is_empty:
             continue
         features.append(feat(stage, {
@@ -476,8 +472,9 @@ def main():
             "visible_to_ka": tk,
             "narrative":
                 (f"At ~{fk:.1f} ka, the Holocene wedge had prograded to ~"
-                 f"{frac*100:.0f}% of its modern seaward extent. "
-                 "Beach ridges to the east mark prior shoreline positions.")
+                 f"{frac*100:.0f}% of its modern seaward extent. The east "
+                 "edge of the wedge is a paleo-shoreline mirroring the "
+                 "curvature of Amelia's modern Atlantic coast.")
                 if fk > 0 else
                 "The Holocene wedge at its modern seaward limit, including "
                 "the post-jetty fillet at Fort Clinch (since 1881).",

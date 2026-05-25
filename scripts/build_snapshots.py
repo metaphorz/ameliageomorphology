@@ -213,24 +213,31 @@ def boundary_line(marsh, amelia):
     # Curving control points with naturalistic sinuosity.
     # Format: (delta_lon_from_cx, lat).
     # Negative delta = west, positive = east.
+    #
+    # Above the marsh's north end (~lat 30.70), the boundary turns SHARPLY
+    # west and EXITS the island via the Amelia River shore. Everything on
+    # Amelia north of where the line exits (the entire Fort Clinch peninsula
+    # north of the marsh) ends up on the "east of line" side = Holocene.
+    # This matches Frank Hopf's observation that the post-welding northern
+    # accretion is overwhelmingly Holocene, with only a tiny Pleistocene
+    # remnant near the lighthouse.
     control = [
         (   0.000, a_miny - 0.5),
-        (+0.003, 30.520),  # slight east bulge in extreme south
+        (+0.003, 30.520),   # slight east bulge in extreme south
         (+0.001, 30.540),
-        (-0.002, 30.570),  # slight west
-        (-0.004, 30.600),  # gentle west arc
+        (-0.002, 30.570),   # slight west
+        (-0.004, 30.600),   # gentle west arc
         (-0.003, 30.625),
         (+0.000, 30.645),
-        (+0.002, 30.660),  # back east, approaching marsh
-        (+0.001, 30.675),  # mid marsh corridor
+        (+0.002, 30.660),   # back east, approaching marsh
+        (+0.001, 30.675),   # mid marsh corridor
         (-0.001, 30.685),
-        (-0.005, 30.695),  # curve begins west toward Fort Clinch
-        (-0.012, 30.703),
-        (-0.020, 30.710),
-        (-0.027, 30.717),
-        (-0.032, 30.725),  # max west, NW of Fort Clinch State Park
-        (-0.034, 30.735),
-        (-0.034, a_maxy + 0.5),
+        (-0.003, 30.692),   # near the marsh's north end
+        (-0.015, 30.700),   # sharp turn west at marsh's north terminus
+        (-0.040, 30.705),   # exits island via Amelia River shore (lon ~-81.485)
+        (-0.080, 30.715),   # well into Amelia River, off the island
+        (-0.100, a_maxy + 0.5),  # extends far NW, ensures Fort Clinch peninsula
+                                  # is entirely east of the line = Holocene
     ]
     pts = [(cx + dx, lat) for dx, lat in control]
     return LineString(pts)

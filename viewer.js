@@ -299,30 +299,34 @@ function renderCrossSection() {
   const BASE_M = -10;
   const SUBSTRATE_BOTTOM_M = -30;
 
+  // ViewBox is 1200 wide × 160 tall, preserveAspectRatio xMidYMid meet,
+  // so text and shapes scale uniformly (no horizontal stretching).
+  const W = 1200;
+
   // Sea fill (from seaY down to the bottom of the svg)
   if (seaY < 160) {
     svg.appendChild(svgEl('rect', {
-      x: 0, y: seaY, width: 600, height: 160 - seaY,
+      x: 0, y: seaY, width: W, height: 160 - seaY,
       fill: '#1f6fb5', opacity: 0.55,
     }));
   }
   // Mud / substrate (always)
   svg.appendChild(svgEl('rect', {
-    x: 0, y: elevY(BASE_M), width: 600,
+    x: 0, y: elevY(BASE_M), width: W,
     height: elevY(SUBSTRATE_BOTTOM_M) - elevY(BASE_M),
     fill: '#7a6650', opacity: 0.7,
   }));
   // Mainland (with raised top)
   svg.appendChild(svgEl('path', {
     d: `M 0 ${elevY(BASE_M)} L 0 ${elevY(SUBSTRATE_BOTTOM_M)} ` +
-       `L 110 ${elevY(SUBSTRATE_BOTTOM_M)} ` +
-       `L 110 ${elevY(MAIN_TOP_M - 4)} ` +
-       `L 60 ${elevY(MAIN_TOP_M)} Z`,
+       `L 220 ${elevY(SUBSTRATE_BOTTOM_M)} ` +
+       `L 220 ${elevY(MAIN_TOP_M - 4)} ` +
+       `L 120 ${elevY(MAIN_TOP_M)} Z`,
     fill: '#8a7e60', stroke: '#5d543f', 'stroke-width': 0.8,
   }));
   // Mainland marsh on the back side
   svg.appendChild(svgEl('rect', {
-    x: 110, y: elevY(MARSH_TOP_M), width: 40,
+    x: 220, y: elevY(MARSH_TOP_M), width: 80,
     height: elevY(BASE_M) - elevY(MARSH_TOP_M),
     fill: '#6a8f4d', opacity: 0.85,
   }));
@@ -331,15 +335,15 @@ function renderCrossSection() {
   if (ka <= 125) {
     const plieY = elevY(PLIE_TOP_M);
     svg.appendChild(svgEl('path', {
-      d: `M 150 ${elevY(BASE_M)} L 150 ${plieY + 4} ` +
-         `Q 210 ${plieY - 4} 270 ${plieY + 4} ` +
-         `L 270 ${elevY(BASE_M)} Z`,
+      d: `M 300 ${elevY(BASE_M)} L 300 ${plieY + 4} ` +
+         `Q 420 ${plieY - 4} 540 ${plieY + 4} ` +
+         `L 540 ${elevY(BASE_M)} Z`,
       fill: '#a47148', stroke: '#6e4e32', 'stroke-width': 0.8,
       opacity: slm > PLIE_TOP_M - 1 ? 0.3 : 1,
     }));
     svg.appendChild(svgText('text', {
-      x: 210, y: plieY - 6,
-      'font-size': 9, 'text-anchor': 'middle', fill: '#5d4030',
+      x: 420, y: plieY - 6,
+      'font-size': 10, 'text-anchor': 'middle', fill: '#5d4030',
     }, 'Pleistocene core'));
   }
 
@@ -348,7 +352,7 @@ function renderCrossSection() {
   if (ka < 7 && ka >= 5.2) holoFrac = (7 - ka) / (7 - 5.2) * 0.4;
   else if (ka < 5.2) holoFrac = 0.4 + Math.min(1, (5.2 - ka) / 5) * 0.6;
   const holoY = elevY(HOLO_TOP_M * holoFrac);
-  const holoX0 = 310, holoX1 = 470;
+  const holoX0 = 620, holoX1 = 940;
 
   // Egans Creek marsh
   let marshFrac = 0;
@@ -357,13 +361,13 @@ function renderCrossSection() {
   if (marshFrac > 0) {
     const my = elevY(MARSH_TOP_M);
     svg.appendChild(svgEl('rect', {
-      x: 270, y: my, width: 40,
+      x: 540, y: my, width: 80,
       height: elevY(BASE_M) - my,
       fill: '#6a8f4d', opacity: 0.4 + 0.5 * marshFrac,
     }));
     if (marshFrac > 0.5) {
       svg.appendChild(svgText('text', {
-        x: 290, y: my - 4, 'font-size': 8,
+        x: 580, y: my - 4, 'font-size': 9,
         'text-anchor': 'middle', fill: '#3a5028',
       }, "Egans"));
     }
@@ -372,12 +376,12 @@ function renderCrossSection() {
   if (holoFrac > 0) {
     svg.appendChild(svgEl('path', {
       d: `M ${holoX0} ${elevY(BASE_M)} L ${holoX0} ${holoY} ` +
-         `L ${holoX1 - 4} ${holoY + 2} L ${holoX1} ${elevY(BASE_M)} Z`,
+         `L ${holoX1 - 8} ${holoY + 2} L ${holoX1} ${elevY(BASE_M)} Z`,
       fill: '#e8d29a', stroke: '#b89a73', 'stroke-width': 0.8,
     }));
     if (holoFrac > 0.4) {
       svg.appendChild(svgText('text', {
-        x: 390, y: holoY - 6, 'font-size': 9,
+        x: 780, y: holoY - 6, 'font-size': 10,
         'text-anchor': 'middle', fill: '#7a5a20',
       }, 'Holocene wedge'));
     }
@@ -389,21 +393,21 @@ function renderCrossSection() {
   if (ka <= 0.15) ridgeCount = 8;
   for (let i = 0; i < ridgeCount; i++) {
     svg.appendChild(svgEl('circle', {
-      cx: holoX1 - 10 - i * 5, cy: holoY - 2, r: 3,
+      cx: holoX1 - 20 - i * 10, cy: holoY - 2, r: 4,
       fill: '#d9b876', stroke: '#8e6a3c', 'stroke-width': 0.5,
     }));
   }
 
   // Pre-weld sandbar - crests just above SL
   let barX = null;
-  if (ka <= 9 && ka >= 7) barX = 545;
-  else if (ka < 7 && ka >= 5.2) barX = 545 - ((7 - ka) / (7 - 5.2)) * 60;
+  if (ka <= 9 && ka >= 7) barX = 1090;
+  else if (ka < 7 && ka >= 5.2) barX = 1090 - ((7 - ka) / (7 - 5.2)) * 120;
   if (barX !== null) {
     const barTop = elevY(2);
     const barBase = elevY(MARSH_TOP_M);
     svg.appendChild(svgEl('path', {
-      d: `M ${barX - 12} ${barBase} Q ${barX} ${barTop} ${barX + 12} ${barBase} ` +
-         `L ${barX + 12} ${barBase + 4} L ${barX - 12} ${barBase + 4} Z`,
+      d: `M ${barX - 24} ${barBase} Q ${barX} ${barTop} ${barX + 24} ${barBase} ` +
+         `L ${barX + 24} ${barBase + 4} L ${barX - 24} ${barBase + 4} Z`,
       fill: '#f0deaf', stroke: '#b89a73',
       'stroke-dasharray': '2 2', 'stroke-width': 0.8,
     }));
@@ -411,21 +415,21 @@ function renderCrossSection() {
 
   // Sea-level dashed line + label (label clamped to visible band)
   svg.appendChild(svgEl('line', {
-    x1: 0, y1: seaY, x2: 600, y2: seaY,
+    x1: 0, y1: seaY, x2: W, y2: seaY,
     stroke: '#1f6fb5', 'stroke-dasharray': '3 3', 'stroke-width': 0.8,
   }));
   const labelY = Math.max(10, Math.min(155, seaY - 3));
   svg.appendChild(svgText('text', {
-    x: 595, y: labelY, 'font-size': 9,
+    x: W - 5, y: labelY, 'font-size': 10,
     'text-anchor': 'end', fill: '#134a7a',
   }, `SL ${slm.toFixed(1)} m`));
 
   // Compass markers
   svg.appendChild(svgText('text', {
-    x: 6, y: 14, 'font-size': 9, fill: '#666',
+    x: 10, y: 14, 'font-size': 10, fill: '#666',
   }, 'W (mainland) ←'));
   svg.appendChild(svgText('text', {
-    x: 594, y: 14, 'font-size': 9, 'text-anchor': 'end', fill: '#666',
+    x: W - 10, y: 14, 'font-size': 10, 'text-anchor': 'end', fill: '#666',
   }, '→ E (Atlantic)'));
 }
 

@@ -537,4 +537,7 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 // Expose for Selenium
-window.__amelia = { setKa, getKa: () => STATE.ka, ERAS };
+window.__amelia = {
+  setKa, getKa: () => STATE.ka, ERAS,
+  get _map() { return STATE.map; },
+};

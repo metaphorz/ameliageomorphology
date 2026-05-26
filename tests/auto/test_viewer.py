@@ -217,6 +217,44 @@ def main():
         driver.save_screenshot(str(png))
         print(f"[ok] transition welding -> {png.relative_to(ROOT)}", flush=True)
 
+        # Bonus: capture a zoomed-in view of the St. Marys Entrance
+        # showing both jetties at present-day. Set time to today, then
+        # zoom + pan to center on the entrance.
+        set_ka(driver, 0)
+        driver.execute_script("""
+          const m = document.querySelector('.leaflet-container')._leaflet_map ||
+                    (window.__amelia && window.__amelia._map);
+          // Pull the Leaflet map by traversing global L instance
+          // (Leaflet stores it on the container element after init)
+          const containers = document.querySelectorAll('.leaflet-container');
+          if (containers.length) {
+            // The map instance is accessible via L's internal registry.
+            // We stored it on window.__amelia for convenience earlier; the
+            // viewer doesn't expose _map, so we'll use the global L
+            // approach: find the map via the container's _leaflet_id
+            // and dispatch a setView via the global map variable that
+            // viewer.js exposes if any. As a fallback, use viewer.js
+            // STATE.map via the closure - exposed below.
+          }
+        """)
+        # Use the exposed-helper approach: viewer.js exposes window.__amelia.setKa
+        # but not the map. Add a small helper call:
+        driver.execute_script("""
+          // Hunt for the map instance via the container's hidden _leaflet_id
+          for (const k in window) {
+            if (k.startsWith('_')) continue;
+          }
+          // Use Leaflet's globally accessible L; the map is the last L.Map instance
+          // viewer.js stores STATE.map but doesn't expose it. We added a helper:
+          if (window.__amelia && window.__amelia._map) {
+            window.__amelia._map.setView([30.717, -81.422], 14);
+          }
+        """)
+        wait_tiles(driver, timeout=10)
+        png = FIG_DIR / "jetties_zoom.png"
+        driver.save_screenshot(str(png))
+        print(f"[ok] jetties zoom -> {png.relative_to(ROOT)}", flush=True)
+
     finally:
         if driver:
             driver.quit()

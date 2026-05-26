@@ -1,4 +1,7 @@
 venv/
+# Reference PDFs (too large for GitHub's 100 MB file limit)
+docs/Hayes.Chapter7_TheGeorgiaBightBarrierSystem.pdf
+docs/*.pdf.large
 __pycache__/
 *.pyc
 *.pyo

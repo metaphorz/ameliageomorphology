@@ -247,7 +247,10 @@ def main():
           // Use Leaflet's globally accessible L; the map is the last L.Map instance
           // viewer.js stores STATE.map but doesn't expose it. We added a helper:
           if (window.__amelia && window.__amelia._map) {
-            window.__amelia._map.setView([30.717, -81.422], 14);
+            // Both jetties span lat 30.700-30.720, lon -81.450 to -81.400.
+            // Center between them and zoom out enough to keep both fully
+            // in frame including the south jetty's full length.
+            window.__amelia._map.setView([30.711, -81.425], 13);
           }
         """)
         wait_tiles(driver, timeout=10)

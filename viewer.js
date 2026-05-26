@@ -74,23 +74,19 @@ const ERAS = [
       "the Atlantic face begins to build seaward. Successive shorelines " +
       "preserved as beach ridges, ~80–150 years per ridge. Most visible " +
       "at Fort Clinch where the island's plan-form favors accretion." },
-  { kaStart: 0.5, kaEnd: 0.15, name: "Late prehistoric",
-    src: "Rink 2005",
+  { kaStart: 0.5, kaEnd: 0.145, name: "Late prehistoric → pre-jetty",
+    src: "USACE archival; Rink 2005",
     narrative:
-      "Beach-ridge plain continues to build out. The island reaches roughly " +
-      "its pre-modern geometry. Native Timucua peoples occupy the island." },
-  { kaStart: 0.15, kaEnd: 0.05, name: "Pre-jetty (1880)",
-    src: "USACE archival",
-    narrative:
-      "Just before 1881. Modern Amelia is essentially complete. The seaward " +
-      "Atlantic face has not yet seen the human-induced fillet of accretion " +
-      "that the St. Marys Entrance jetty will produce." },
-  { kaStart: 0.05, kaEnd: 0, name: "Post-jetty / present",
+      "From ~500 yr BP (Native Timucua occupation) up to the eve of " +
+      "jetty construction in 1881. Modern Amelia is essentially complete; " +
+      "the Atlantic face is at its natural pre-industrial shape, before " +
+      "the human-induced fillet of accretion at Fort Clinch." },
+  { kaStart: 0.145, kaEnd: 0, name: "Post-jetty (1881) → present",
     src: "USACE / Nassau County Shore Protection Project",
     narrative:
       "The St. Marys Entrance jetty (completed 1881, extended thereafter) " +
       "intercepts longshore drift. The north end of Amelia gains an extra " +
-      "fillet — the post-jetty dune set — in just 150 years. Today the " +
+      "fillet — the post-jetty dune set — in just 145 years. Today the " +
       "USACE and the Nassau County Shore Protection Project manage " +
       "periodic beach nourishment on the developed central portion." },
 ];

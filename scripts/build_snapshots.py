@@ -529,40 +529,119 @@ def main():
     }))
 
     # ----- Jetties at the St. Marys River entrance -----
-    # Geometry pulled directly from OSM `man_made=breakwater` features
-    # (see scripts/fetch_jetties.py). The south jetty is the 8-point
-    # breakwater starting at Fort Clinch's NE tip; the north jetty is a
-    # 2-point breakwater extending east from Cumberland's south tip.
+    # Geometry pulled directly from NOAA ENC chart US5FL8CE.000 (St. Marys
+    # Entrance area), SLCONS (Shoreline Construction) layer, CATSLC=4
+    # (jetty/pier). The NOAA chart is the authoritative survey source.
+    #
+    # The chart has 5 SLCONS features:
+    #   - 4 features on the south side (lat ≈ 30.70) that together
+    #     trace the South Jetty extending east from Fort Clinch's NE tip
+    #   - 1 long feature on the north side (lat ≈ 30.72) that is the
+    #     full North Jetty extending east from Cumberland's south tip
+    # The south-side features are merged via shapely.linemerge to produce
+    # a continuous LineString. Length: North ~4.1 km, South ~2.5 km.
+    #
     # Built 1881-1893 by US Army Corps of Engineers (USACE).
-    # Source: Frank Hopf, Dunes Pt 2 (Conserve Nassau).
-    jetties_file = ROOT / "data" / "osm_jetties.geojson"
+    # Source: Frank Hopf, Dunes Pt 2 (Conserve Nassau); NOAA Chart 11502.
+    jetties_file = ROOT / "data" / "jetties_noaa.geojson"
     south_jetty_coords = None
     north_jetty_coords = None
     if jetties_file.exists():
         j_fc = json.loads(jetties_file.read_text())
-        breakwaters = [f for f in j_fc["features"]
-                       if f["properties"].get("man_made") == "breakwater"]
-        # South jetty: the breakwater entirely below lat 30.715
-        # North jetty: the breakwater at lat >= 30.715
-        for bw in breakwaters:
-            coords = bw["geometry"]["coordinates"]
+        south_lines = []
+        north_lines = []
+        for f in j_fc["features"]:
+            if f["geometry"]["type"] != "LineString":
+                continue
+            coords = f["geometry"]["coordinates"]
+            # NOAA SLCONS for jetties contains both CENTERLINES (open
+            # linestrings) and OUTLINES (closed loops or perimeter traces
+            # that go around the rock-structure perimeter). For our
+            # display we want centerlines.
+            #
+            # Outline detection: compare the polyline's actual length to
+            # the straight-line distance between its endpoints. A
+            # centerline has ratio ≈ 1; an outline that traces both sides
+            # of the jetty has ratio ≈ 2+ (or ∞ for a fully closed loop).
+            if len(coords) >= 2:
+                ls_tmp = LineString(coords)
+                # straight-line endpoint distance (km, approx at lat 30)
+                dx = (coords[-1][0] - coords[0][0]) * 96.0
+                dy = (coords[-1][1] - coords[0][1]) * 111.0
+                straight_km = (dx * dx + dy * dy) ** 0.5
+                # polyline length in km
+                poly_km = 0.0
+                for j in range(len(coords) - 1):
+                    ddx = (coords[j+1][0] - coords[j][0]) * 96.0
+                    ddy = (coords[j+1][1] - coords[j][1]) * 111.0
+                    poly_km += (ddx * ddx + ddy * ddy) ** 0.5
+                if straight_km < 0.05:
+                    continue  # fully closed loop
+                if poly_km / straight_km > 1.5:
+                    continue  # outline (traces both sides of structure)
             mean_lat = sum(c[1] for c in coords) / len(coords)
-            if mean_lat < 30.715:
-                south_jetty_coords = coords
+            ls = LineString(coords)
+            if mean_lat > 30.713:
+                north_lines.append(ls)
             else:
-                north_jetty_coords = coords
+                south_lines.append(ls)
+        # Merge south-side segments. NOAA splits the South Jetty into
+        # ~4 overlapping segments whose endpoints don't always match
+        # exactly. Strategy: pick the most-detailed inner segment (most
+        # points) and concatenate it with the most-distal eastward
+        # extension, bridging any small gap (typically <100 m).
+        if south_lines:
+            # Pick most detailed inner segment (highest point count among
+            # those whose seaward end is still west of -81.420)
+            inner_candidates = [
+                l for l in south_lines
+                if max(c[0] for c in l.coords) < -81.420
+            ]
+            inner = max(inner_candidates, key=lambda l: len(l.coords)) if inner_candidates else None
+            # Pick the segment extending furthest east (highest max-lon)
+            ext = max(south_lines, key=lambda l: max(c[0] for c in l.coords))
+            if inner is not None and inner is not ext:
+                inner_coords = list(inner.coords)
+                ext_coords = list(ext.coords)
+                # Orient both west→east
+                if inner_coords[0][0] > inner_coords[-1][0]:
+                    inner_coords.reverse()
+                if ext_coords[0][0] > ext_coords[-1][0]:
+                    ext_coords.reverse()
+                # Concatenate: drop the inner's last point if it's very
+                # close to ext's first point (avoids duplicate vertex);
+                # otherwise just concatenate (introduces a bridge segment).
+                last_inner = inner_coords[-1]
+                first_ext = ext_coords[0]
+                dx = (first_ext[0] - last_inner[0]) * 96.0
+                dy = (first_ext[1] - last_inner[1]) * 111.0
+                gap_m = (dx*dx + dy*dy) ** 0.5 * 1000
+                if gap_m < 20:
+                    south_jetty_coords = inner_coords[:-1] + ext_coords
+                else:
+                    south_jetty_coords = inner_coords + ext_coords
+            elif inner is not None:
+                south_jetty_coords = [list(c) for c in inner.coords]
+            else:
+                south_jetty_coords = [list(c) for c in ext.coords]
+        # North jetty: single line, just use it
+        if north_lines:
+            north_line = max(north_lines, key=lambda l: l.length)
+            north_jetty_coords = [list(c) for c in north_line.coords]
+    # Fallback: OSM breakwater geometry if NOAA file is missing
     if south_jetty_coords is None:
         south_jetty_coords = [
             (-81.4284, 30.7005), (-81.4058, 30.7073),
         ]
     if north_jetty_coords is None:
         north_jetty_coords = [
-            (-81.4488, 30.7196), (-81.4347, 30.7173),
+            (-81.4488, 30.7196), (-81.4061, 30.7183),
         ]
-    # Ensure north jetty oriented west→east (landward→seaward) for label placement
+    # Ensure west→east orientation (landward→seaward) for both
+    if south_jetty_coords[0][0] > south_jetty_coords[-1][0]:
+        south_jetty_coords = list(reversed(south_jetty_coords))
     if north_jetty_coords[0][0] > north_jetty_coords[-1][0]:
         north_jetty_coords = list(reversed(north_jetty_coords))
-    # South jetty already west→east in OSM
 
     features.append(feat(LineString(south_jetty_coords), {
         "id": "south-jetty",

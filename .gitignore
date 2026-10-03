@@ -14,3 +14,5 @@ docs/*.log
 docs/*.out
 docs/*.toc
 docs/*.bak
+docs/*.fls
+docs/*.fdb_latexmk

@@ -278,6 +278,7 @@ footer {
 }
 
 footer a { color: var(--ocean); }
+footer .credit { margin-top: 6px; font-style: italic; }
 
 /* Leaflet layer styling helpers — set inline by viewer.js as Path options */
 .layer-pleistocene { fill: #a47148; stroke: #6e4e32; }
